@@ -1,3 +1,3 @@
 #bean-chess
 
-I'm creating chess engine in c.
+I'm creating a chess engine in c.
