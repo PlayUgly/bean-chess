@@ -1,4 +1,5 @@
 #include <stdlib.h>
+/* #include <stdio.h> */
 
 long *whitePawnMoves[64];
 long *whitePawnCaptures[64];
@@ -64,7 +65,7 @@ void InitializePawnMoves()
 		*movePointer = SquareNumber(3, file);
 
 		movePointer++;
-		*movePointer = 0;
+		*movePointer = -1;
 
 		movePointer = blackPawnMoves[squareNumber + 40];
 		*movePointer = SquareNumber(5, file);
@@ -73,10 +74,10 @@ void InitializePawnMoves()
 		*movePointer = SquareNumber(4, file);
 
 		movePointer++;
-		*movePointer = 0;
+		*movePointer = -1;
 	}
 
-	/*One move for the remaining squares */
+	/* One move for the remaining squares */
 	for(int squareNumber = 8; squareNumber < 56; squareNumber++)
 	{
 		file = File(squareNumber);
@@ -90,7 +91,7 @@ void InitializePawnMoves()
 			*movePointer = SquareNumber(rank + 1, file);
 
 			movePointer++;
-			*movePointer = 0;
+			*movePointer = -1;
 		}
 
 		if (rank < 6)
@@ -101,7 +102,7 @@ void InitializePawnMoves()
 			*movePointer = SquareNumber(rank - 1, file);
 
 			movePointer++;
-			*movePointer = 0;
+			*movePointer = -1;
 		}
 	}
 
@@ -113,7 +114,7 @@ void InitializePawnCaptures()
 	int rank;
 	int file;
 
-	/*No legal pawn captures from the first and eight ranks */
+	/* No legal pawn captures from the first and eight ranks */
 	for(int squareNumber = 0; squareNumber < 8; squareNumber++)
 	{
 		whitePawnCaptures[squareNumber] = malloc(sizeof(long));
@@ -133,12 +134,12 @@ void InitializePawnCaptures()
 	for(int squareNumber = 8; squareNumber < 56; squareNumber++)	
 	{
 		if (file == 0 || file == 8)
-		{	/*Pawns on the edge have only one capture move */
+		{	/* Pawns on the edge have only one capture move */
 			whitePawnCaptures[squareNumber] = (long *)malloc(2 * sizeof (long));
 			blackPawnCaptures[squareNumber] = (long *)malloc(2 * sizeof (long));
 		}
 		else
-		{	/*All other pawns have two capture moves */
+		{	/* All other pawns have two capture moves */
 			whitePawnCaptures[squareNumber] = (long *)malloc(3 * sizeof (long));
 			blackPawnCaptures[squareNumber] = (long *)malloc(3 * sizeof (long));
 		}
@@ -181,21 +182,154 @@ void InitializePawnCaptures()
 	}
 }
 
+void InitializeKnightMoves()
+{
+	for(int squareNumber = 0; squareNumber < 64; squareNumber++)	
+	{
+		int rankEdgeDistance = Rank(squareNumber);
+		int fileEdgeDistance;
+
+		int knightMoveCount = 0;
+
+		int currentRank = Rank(squareNumber);
+		int currentFile = File(squareNumber);
+
+		/* The number of knight moves depends on how far from the
+		 * board edges the knight is.  Find the minimum distance 
+		 * from both edges.  If the distance is more than 2 
+		 * squares from an edge, then use 2.  Add the distances
+		 * from the two edges.  The number of knight moves is
+		 * then found from this table:
+		 *
+		 * 	Sum of two distances		Knight move count
+		 * 			0							2
+		 * 			1							3
+		 * 			2							4
+		 * 			3							6
+		 * 			4							8
+		 *
+		 * 	I figured this our for myself.  Confirm it for 
+		 * 	yourself if you don't believe it.
+		 */
+
+		if(currentRank == 0 || currentRank == 7)
+		{
+			rankEdgeDistance = 0;
+		}
+		else if (currentRank == 1 || currentRank == 6)
+		{
+			rankEdgeDistance = 1;
+		}
+		else
+		{
+			rankEdgeDistance = 2;
+		}
+
+		if(currentFile == 0 || currentFile == 7)
+		{
+			fileEdgeDistance = 0;
+		}
+		else if (currentFile == 1 || currentFile == 6)
+		{
+			fileEdgeDistance = 1;
+		}
+		else
+		{
+			fileEdgeDistance = 2;
+		}
+
+		int total = rankEdgeDistance + fileEdgeDistance;
+
+		switch(total)
+		{
+			case 0:
+				knightMoveCount = 2;
+				break;
+
+			case 1:
+				knightMoveCount = 3;
+				break;	
+
+			case 2:
+				knightMoveCount = 4;
+				break;
+
+			case 3:
+				knightMoveCount = 6;
+				break;
+
+			case 4:
+				knightMoveCount = 8;
+				break;
+		}
+
+		knightMoves[squareNumber] = (long *)malloc((knightMoveCount + 1) * sizeof(long));
+		
+		long *movePointer = knightMoves[squareNumber];
+
+		for(int i = -2; i < 3; i++)
+		{
+			int nextRank = currentRank + i;
+			int nextFile;
+
+			if(nextRank > - 1 && nextRank < 8 && i != 0)
+			{
+				if(i == 1 || i == -1)
+				{
+					int nextFile;
+
+					for(int j = -2; j < 3; j += 4)
+					{
+						nextFile = currentFile + j;
+
+						if(nextFile > -1 && nextFile < 8)	
+						{
+							*movePointer = SquareNumber(nextRank, nextFile);
+							movePointer++;
+						}
+					}
+				}
+				else if (i == 2 || i == -2)
+				{
+					for(int j = -1; j < 2; j += 2)
+					{
+						nextFile = currentFile + j;
+
+						if(nextFile > -1 && nextFile < 8)
+						{
+							*movePointer = SquareNumber(nextRank, nextFile);
+							movePointer++;
+						}
+					}
+				}
+			}
+		}
+
+		*movePointer = -1;
+
+	}
+}
+
+
 void InitializeMoves()
 {
-	InitializePawnMoves();
+/*	InitializePawnMoves();
 	InitializePawnCaptures();
+*/
+	InitializeKnightMoves();
 }
 
 void TerminateMoves()
 {
 	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
 	{
-		free(whitePawnMoves[squareNumber]);	
+/*		free(whitePawnMoves[squareNumber]);	
 		free(blackPawnMoves[squareNumber]);	
 
 		free(whitePawnCaptures[squareNumber]);
 		free(blackPawnCaptures[squareNumber]);
+*/		
+		free(knightMoves[squareNumber]);
 	}
 
 }

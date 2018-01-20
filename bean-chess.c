@@ -19,7 +19,6 @@ int main()
 	printf("Bits Initialized!\n");
 
 	InitializeMoves();
-	printf("Pawn Moves Initialized!\n");
 	
 	/*
 	for(int i = 0; i < 64; i++)
@@ -57,7 +56,7 @@ int main()
 
 			movePointer = whitePawnMoves[squareNumber];	
 
-			while(*movePointer)
+			while(*movePointer > 0)
 			{
 				SquareAddress(*movePointer, address);
 				printf("%s ", address);
@@ -79,7 +78,7 @@ int main()
 
 			movePointer = blackPawnMoves[squareNumber];	
 
-			while(*movePointer)
+			while(*movePointer > 0)
 			{
 				SquareAddress(*movePointer, address);
 				printf("%s ", address);
@@ -89,7 +88,6 @@ int main()
 
 			printf("\n");
 	}
-	*/
 
 	printf("White Pawn Captures\n");
 		
@@ -100,7 +98,7 @@ int main()
 
 			movePointer = whitePawnCaptures[squareNumber];	
 
-			while(*movePointer)
+			while(*movePointer > 0)
 			{
 				SquareAddress(*movePointer, address);
 				printf("%s ", address);
@@ -122,7 +120,7 @@ int main()
 
 			movePointer = blackPawnCaptures[squareNumber];	
 
-			while(*movePointer)
+			while(*movePointer > 0)
 			{
 				SquareAddress(*movePointer, address);
 				printf("%s ", address);
@@ -132,7 +130,28 @@ int main()
 
 			printf("\n");
 	}
+	*/
 
+	printf("\n\n");
+	printf("Knight Moves\n");
+
+	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
+	{
+			SquareAddress(squareNumber, address);
+			printf("\t%s: ", address);
+
+			movePointer = knightMoves[squareNumber];	
+
+			while(*movePointer > -1)
+			{
+				SquareAddress(*movePointer, address);
+				printf("%s ", address);
+
+				movePointer++;
+			}
+
+			printf("\n");
+	}
 
 	TerminateMoves();
 }
