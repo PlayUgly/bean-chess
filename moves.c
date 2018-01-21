@@ -267,40 +267,38 @@ void InitializeKnightMoves()
 		
 		long *movePointer = knightMoves[squareNumber];
 
-		for(int i = -2; i < 3; i++)
+		for(int rankChange = -2; rankChange < 3; rankChange++)
 		{
-			int nextRank = currentRank + i;
-			int nextFile;
+			int nextRank = currentRank + rankChange;
 
-			if(nextRank > - 1 && nextRank < 8 && i != 0)
+			if(nextRank > - 1 && nextRank < 8 && rankChange != 0)
 			{
-				if(i == 1 || i == -1)
+				int fileChange;
+
+				if(rankChange == 1 || rankChange == -1)
+				{
+					fileChange = 2;
+				}
+				else
+				{
+					fileChange = 1;
+				}
+
+				int multiplier = -1;
+
+				while(multiplier < 2)
 				{
 					int nextFile;
 
-					for(int j = -2; j < 3; j += 4)
+					nextFile = currentFile + multiplier * fileChange;
+				
+					if (nextFile > -1 && nextFile < 8)
 					{
-						nextFile = currentFile + j;
-
-						if(nextFile > -1 && nextFile < 8)	
-						{
-							*movePointer = SquareNumber(nextRank, nextFile);
-							movePointer++;
-						}
+						*movePointer = SquareNumber(nextRank, nextFile);
+						*movePointer++;
 					}
-				}
-				else if (i == 2 || i == -2)
-				{
-					for(int j = -1; j < 2; j += 2)
-					{
-						nextFile = currentFile + j;
 
-						if(nextFile > -1 && nextFile < 8)
-						{
-							*movePointer = SquareNumber(nextRank, nextFile);
-							movePointer++;
-						}
-					}
+					multiplier += 2;
 				}
 			}
 		}
