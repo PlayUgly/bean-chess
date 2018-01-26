@@ -16,9 +16,9 @@ int main()
 	*/
 
 	InitializeBits();
-	printf("Bits Initialized!\n");
 
 	InitializeMoves();
+	printf("Moves Initialized!\n");
 	
 	/*
 	for(int i = 0; i < 64; i++)
@@ -130,7 +130,6 @@ int main()
 
 			printf("\n");
 	}
-	*/
 
 	printf("\n\n");
 	printf("Knight Moves\n");
@@ -153,6 +152,36 @@ int main()
 			printf("\n");
 	}
 
+	*/
+
+	printf("\n\n");
+	printf("Rook Moves\n");
+
+	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
+	{
+			long **pointerToMovePointer = rookMoves[squareNumber];
+
+			SquareAddress(squareNumber, address);
+			printf("\t%s: ", address);
+
+			while(*pointerToMovePointer)
+			{
+				movePointer = *pointerToMovePointer;
+
+				while(*movePointer > -1)
+				{
+					SquareAddress(*movePointer, address);
+					printf("%s ", address);
+
+					movePointer++;
+				}
+
+				*pointerToMovePointer++;
+			}
+
+
+			printf("\n");
+	}
+
 	TerminateMoves();
 }
-

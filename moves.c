@@ -308,13 +308,135 @@ void InitializeKnightMoves()
 	}
 }
 
+void InitializeRookMoves()
+{
+	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
+	{
+		int currentRank = Rank(squareNumber);
+		int currentFile = File(squareNumber);
+
+		long *movePointer;
+		long **pointerToMovePointer;
+
+		/* Keep track of the number of directions a rook can move from a square. This determines
+		 * the number of move pointers are necessary for each square.  Start with 4 and
+		 * subtract the number of edges the square is on.
+		 */
+		int directionCount = 4;
+
+		if(currentRank == 0 || currentRank == 7)
+		{
+			directionCount--;
+		}
+
+		if(currentFile == 0 || currentFile == 7)
+		{
+			directionCount--;
+		}
+
+		rookMoves[squareNumber] = (long **)malloc((directionCount + 1) * sizeof(long *));
+		pointerToMovePointer = rookMoves[squareNumber];
+
+		int edgeDistance;
+
+		
+		/* Moves to white's right */
+
+		if(currentFile < 7)
+		{
+			edgeDistance = 7 - currentFile;
+
+			*pointerToMovePointer = (long *)malloc((edgeDistance + 1) * sizeof(long));
+			movePointer = *pointerToMovePointer;
+
+			for(int nextFile = currentFile + 1; nextFile < 8; nextFile++)
+			{
+				*movePointer = SquareNumber(currentRank, nextFile);
+				movePointer++;	
+			}
+
+			*movePointer = -1;
+
+			*pointerToMovePointer++;
+
+		}
+
+
+		/* Moves to white's left */
+
+		if(currentFile > 0)
+		{
+			edgeDistance = currentFile;
+
+			*pointerToMovePointer = (long *)malloc((edgeDistance + 1) * sizeof(long));
+			movePointer = *pointerToMovePointer;
+
+			for(int nextFile = currentFile - 1; nextFile > -1; nextFile--)
+			{
+				*movePointer = SquareNumber(currentRank, nextFile);
+				movePointer++;	
+			}
+
+			*movePointer = -1;
+
+			*pointerToMovePointer++;
+
+		}
+
+
+		/* Moves to black's side of the board */
+
+		if(currentRank < 7)
+		{
+			edgeDistance = 7 - currentRank;
+
+			*pointerToMovePointer = (long *)malloc((edgeDistance + 1) * sizeof(long));
+			movePointer = *pointerToMovePointer;
+
+			for(int nextRank = currentRank + 1; nextRank < 8; nextRank++)
+			{
+				*movePointer = SquareNumber(nextRank, currentFile);
+				movePointer++;	
+			}
+
+			*movePointer = -1;
+
+			*pointerToMovePointer++;
+
+		}
+
+		/* Moves to white's side of the board */
+
+		if(currentRank > 0)
+		{
+			edgeDistance = currentRank;
+
+			*pointerToMovePointer = (long *)malloc((edgeDistance + 1) * sizeof(long));
+			movePointer = *pointerToMovePointer;
+
+			for(int nextRank = currentRank - 1; nextRank > -1; nextRank--)
+			{
+				*movePointer = SquareNumber(nextRank, currentFile);
+				movePointer++;	
+			}
+
+			*movePointer = -1;
+
+			*pointerToMovePointer++;
+
+		}
+		*pointerToMovePointer = 0;
+	}
+}
+
 
 void InitializeMoves()
 {
 /*	InitializePawnMoves();
 	InitializePawnCaptures();
-*/
 	InitializeKnightMoves();
+*/
+	InitializeRookMoves();
 }
 
 void TerminateMoves()
@@ -326,8 +448,16 @@ void TerminateMoves()
 
 		free(whitePawnCaptures[squareNumber]);
 		free(blackPawnCaptures[squareNumber]);
-*/		
 		free(knightMoves[squareNumber]);
-	}
+*/		
+		long **pointerToMovePointer = rookMoves[squareNumber];
+		
+		while(*pointerToMovePointer)
+		{
+			free(*pointerToMovePointer);
+			*pointerToMovePointer++;
+		}
 
+		free(rookMoves[squareNumber]);
+	}
 }
