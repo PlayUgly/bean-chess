@@ -13,3 +13,4 @@ bits.o: bits.h
 
 clean:
 		rm $(objects) bean-chess.exe
+		rm temp

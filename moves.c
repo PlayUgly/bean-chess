@@ -340,7 +340,7 @@ void InitializeRookMoves()
 		int edgeDistance;
 
 		
-		/* Moves to white's right */
+		/* Moves to king's side */
 
 		if(currentFile < 7)
 		{
@@ -358,11 +358,10 @@ void InitializeRookMoves()
 			*movePointer = -1;
 
 			*pointerToMovePointer++;
-
 		}
 
 
-		/* Moves to white's left */
+		/* Moves to queen side */
 
 		if(currentFile > 0)
 		{
@@ -380,7 +379,6 @@ void InitializeRookMoves()
 			*movePointer = -1;
 
 			*pointerToMovePointer++;
-
 		}
 
 
@@ -402,7 +400,6 @@ void InitializeRookMoves()
 			*movePointer = -1;
 
 			*pointerToMovePointer++;
-
 		}
 
 		/* Moves to white's side of the board */
@@ -423,8 +420,179 @@ void InitializeRookMoves()
 			*movePointer = -1;
 
 			*pointerToMovePointer++;
-
 		}
+
+		*pointerToMovePointer = 0;
+	}
+}
+
+
+void InitializeBishopMoves()
+{
+	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
+	{
+		int currentRank = Rank(squareNumber);
+		int currentFile = File(squareNumber);
+
+		long *movePointer;
+		long **pointerToMovePointer;
+
+		/* Keep track of the number of directions a bishop can move from a square. This determines
+		 * the number of move pointers are necessary for each square.  If the bishop is on only 
+		 * one side, then it has two direction to move.  If it's in a corner it has only one
+		 * direction to move.  Any place else and it has four directions to move.
+		 */
+
+		int directionCount = 4;
+
+		if(currentRank == 0 || currentRank == 7)
+		{
+			directionCount = 2;
+		}
+
+		if(currentFile == 0 || currentFile == 7)
+		{
+			if(directionCount == 4)
+			{
+				directionCount = 2;
+			}
+			else
+			{
+				directionCount = 1;
+			}
+		}
+
+		bishopMoves[squareNumber] = (long **)malloc((directionCount + 1) * sizeof(long *));
+		pointerToMovePointer = bishopMoves[squareNumber];
+
+		int rankEdgeDistance; 
+		int fileEdgeDistance;
+		int edgeDistance;
+
+		
+		/* Moves to black king-side corner */
+
+		rankEdgeDistance = 7 - currentRank;
+		fileEdgeDistance = 7 - currentFile;
+
+		if(rankEdgeDistance < fileEdgeDistance)
+		{
+			edgeDistance = rankEdgeDistance;
+		}
+		else
+		{
+			edgeDistance = fileEdgeDistance;
+		}
+
+		if(edgeDistance)
+		{
+			*pointerToMovePointer = (long *)malloc((edgeDistance + 1) * sizeof(long));
+			movePointer = *pointerToMovePointer;
+
+			for(int moveCount = 1; moveCount <= edgeDistance; moveCount++)
+			{
+				*movePointer = SquareNumber(currentRank + moveCount, currentFile + moveCount);
+				movePointer++;	
+			}
+
+			*movePointer = -1;
+
+			*pointerToMovePointer++;
+		}
+
+
+		/* Moves to black queen-side corner */
+
+		rankEdgeDistance = 7 - currentRank;
+		fileEdgeDistance = currentFile;
+
+		if(rankEdgeDistance < fileEdgeDistance)
+		{
+			edgeDistance = rankEdgeDistance;
+		}
+		else
+		{
+			edgeDistance = fileEdgeDistance;
+		}
+
+		if(edgeDistance)
+		{
+			*pointerToMovePointer = (long *)malloc((edgeDistance + 1) * sizeof(long));
+			movePointer = *pointerToMovePointer;
+
+			for(int moveCount = 1; moveCount <= edgeDistance; moveCount++)
+			{
+				*movePointer = SquareNumber(currentRank + moveCount, currentFile - moveCount);
+				movePointer++;	
+			}
+
+			*movePointer = -1;
+
+			*pointerToMovePointer++;
+		}
+
+
+		/* Moves to white king-side corner */
+
+		rankEdgeDistance = currentRank;
+		fileEdgeDistance = 7 - currentFile;
+
+		if(rankEdgeDistance < fileEdgeDistance)
+		{
+			edgeDistance = rankEdgeDistance;
+		}
+		else
+		{
+			edgeDistance = fileEdgeDistance;
+		}
+
+		if(edgeDistance)
+		{
+			*pointerToMovePointer = (long *)malloc((edgeDistance + 1) * sizeof(long));
+			movePointer = *pointerToMovePointer;
+
+			for(int moveCount = 1; moveCount <= edgeDistance; moveCount++)
+			{
+				*movePointer = SquareNumber(currentRank - moveCount, currentFile + moveCount);
+				movePointer++;	
+			}
+
+			*movePointer = -1;
+
+			*pointerToMovePointer++;
+		}
+
+
+		/* Moves to white queen-side corner */
+
+		rankEdgeDistance = currentRank;
+		fileEdgeDistance = currentFile;
+
+		if(rankEdgeDistance < fileEdgeDistance)
+		{
+			edgeDistance = rankEdgeDistance;
+		}
+		else
+		{
+			edgeDistance = fileEdgeDistance;
+		}
+
+		if(edgeDistance)
+		{
+			*pointerToMovePointer = (long *)malloc((edgeDistance + 1) * sizeof(long));
+			movePointer = *pointerToMovePointer;
+
+			for(int moveCount = 1; moveCount <= edgeDistance; moveCount++)
+			{
+				*movePointer = SquareNumber(currentRank - moveCount, currentFile - moveCount);
+				movePointer++;	
+			}
+
+			*movePointer = -1;
+
+			*pointerToMovePointer++;
+		}
+
 		*pointerToMovePointer = 0;
 	}
 }
@@ -435,8 +603,9 @@ void InitializeMoves()
 /*	InitializePawnMoves();
 	InitializePawnCaptures();
 	InitializeKnightMoves();
-*/
 	InitializeRookMoves();
+*/
+	InitializeBishopMoves();
 }
 
 void TerminateMoves()
@@ -449,7 +618,7 @@ void TerminateMoves()
 		free(whitePawnCaptures[squareNumber]);
 		free(blackPawnCaptures[squareNumber]);
 		free(knightMoves[squareNumber]);
-*/		
+
 		long **pointerToMovePointer = rookMoves[squareNumber];
 		
 		while(*pointerToMovePointer)
@@ -459,5 +628,16 @@ void TerminateMoves()
 		}
 
 		free(rookMoves[squareNumber]);
+*/		
+
+		long **pointerToMovePointer = bishopMoves[squareNumber];
+		
+		while(*pointerToMovePointer)
+		{
+			free(*pointerToMovePointer);
+			*pointerToMovePointer++;
+		}
+
+		free(bishopMoves[squareNumber]);
 	}
 }

@@ -154,12 +154,43 @@ int main()
 
 	*/
 
+	/*
 	printf("\n\n");
 	printf("Rook Moves\n");
 
 	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
 	{
 			long **pointerToMovePointer = rookMoves[squareNumber];
+
+			SquareAddress(squareNumber, address);
+			printf("\t%s: ", address);
+
+			while(*pointerToMovePointer)
+			{
+				movePointer = *pointerToMovePointer;
+
+				while(*movePointer > -1)
+				{
+					SquareAddress(*movePointer, address);
+					printf("%s ", address);
+
+					movePointer++;
+				}
+
+				*pointerToMovePointer++;
+			}
+
+
+			printf("\n");
+	}
+*/
+
+	printf("\n\n");
+	printf("Bishop Moves\n");
+
+	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
+	{
+			long **pointerToMovePointer = bishopMoves[squareNumber];
 
 			SquareAddress(squareNumber, address);
 			printf("\t%s: ", address);
