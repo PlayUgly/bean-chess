@@ -85,7 +85,7 @@ void InitializePawnMoves()
 
 		if(rank > 1)
 		{
-			whitePawnMoves[squareNumber] = (long *)malloc(sizeof(long));	
+			whitePawnMoves[squareNumber] = (long *)malloc(2 * sizeof(long));	
 
 			movePointer = whitePawnMoves[squareNumber];
 			*movePointer = SquareNumber(rank + 1, file);
@@ -96,7 +96,7 @@ void InitializePawnMoves()
 
 		if (rank < 6)
 		{
-			blackPawnMoves[squareNumber] = (long *)malloc(sizeof(long));	
+			blackPawnMoves[squareNumber] = (long *)malloc(2 * sizeof(long));	
 
 			movePointer = blackPawnMoves[squareNumber];
 			*movePointer = SquareNumber(rank - 1, file);
