@@ -1,36 +1,45 @@
 #include <stdlib.h>
-/* #include <stdio.h> */
+/*#include <stdio.h>*/
+#include "moves.h"
 
-long *whitePawnMoves[64];
-long *whitePawnCaptures[64];
-long *blackPawnMoves[64];
-long *blackPawnCaptures[64];
-long *knightMoves[64];
-long **bishopMoves[64];
-long **rookMoves[64];
+/* Squares are numbered 0 through 63 starting with square a1 
+ * incrementing from file a to file h, and then wrapping
+ * back to file a on the next highest rank.  h8 is square 63.
+ */
 
+/* Returns the rank number given a square number. */
 int Rank(int squareNumber)
 {
 	return squareNumber / 8;
 }
 
+/* Returns the file number given a square number. */
 int File(int squareNumber)
 {
 	return squareNumber % 8;
 }
 
+/* Returns a square number given rank and file numbers. */
 int SquareNumber(int rank, int file)
 {
 	return rank * 8 + file;
 }
 
+/* Assigns a square address in algebraic notation to a
+ * given string buffer for a given square number.
+ * The buffer must hold two characters. */
 void SquareAddress(int squareNumber, char *address)
 {
 	address[0] = (char)(File(squareNumber) + 97);
 	address[1] = (char)(Rank(squareNumber) + 49);
 }
 
-void InitializePawnMoves()
+/* Initializes black and white pawn moves in two different
+ * two-dimensional arrays.  The first dimension of each array
+ * must have at least 64 elements, one for each square on the
+ * board.  The second dimension is dynamically sized to either
+ * 1, 2, or 3 elements depending on which rank the square is. */
+void InitializePawnMoves(long **whitePawnMoves, long **blackPawnMoves)
 {
 	int file;
 	int rank;
@@ -55,6 +64,8 @@ void InitializePawnMoves()
 	/*Two moves for pawns on the second rank. */
 	for(int squareNumber = 8; squareNumber < 16; squareNumber++)
 	{
+		file = File(squareNumber);
+
 		whitePawnMoves[squareNumber] = (long *)malloc(3 * sizeof(long));	
 		blackPawnMoves[squareNumber + 40] = (long *)malloc(3 * sizeof(long));	
 
@@ -109,7 +120,9 @@ void InitializePawnMoves()
 
 }
 
-void InitializePawnCaptures()
+
+
+void InitializePawnCaptures(long **whitePawnCaptures, long **blackPawnCaptures)
 {
 	int rank;
 	int file;
@@ -182,7 +195,7 @@ void InitializePawnCaptures()
 	}
 }
 
-void InitializeKnightMoves()
+void InitializeKnightMoves(long **knightMoves)
 {
 	for(int squareNumber = 0; squareNumber < 64; squareNumber++)	
 	{
@@ -195,8 +208,8 @@ void InitializeKnightMoves()
 		int currentFile = File(squareNumber);
 
 		/* The number of knight moves depends on how far from the
-		 * board edges the knight is.  Find the minimum distance 
-		 * from both edges.  If the distance is more than 2 
+		 * board edges the knight is.  Find the distance to the
+		 * two nearest edges. If the distance is more than 2 
 		 * squares from an edge, then use 2.  Add the distances
 		 * from the two edges.  The number of knight moves is
 		 * then found from this table:
@@ -207,9 +220,6 @@ void InitializeKnightMoves()
 		 * 			2							4
 		 * 			3							6
 		 * 			4							8
-		 *
-		 * 	I figured this our for myself.  Confirm it for 
-		 * 	yourself if you don't believe it.
 		 */
 
 		if(currentRank == 0 || currentRank == 7)
@@ -308,7 +318,7 @@ void InitializeKnightMoves()
 	}
 }
 
-void InitializeRookMoves()
+void InitializeRookMoves(long ***rookMoves)
 {
 	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
 	{
@@ -427,7 +437,7 @@ void InitializeRookMoves()
 }
 
 
-void InitializeBishopMoves()
+void InitializeBishopMoves(long ***bishopMoves)
 {
 	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
 	{
@@ -598,28 +608,30 @@ void InitializeBishopMoves()
 }
 
 
-void InitializeMoves()
+void InitializeMoves(struct Moves *moves_pointer)
 {
-/*	InitializePawnMoves();
-	InitializePawnCaptures();
-	InitializeKnightMoves();
-	InitializeRookMoves();
-*/
-	InitializeBishopMoves();
+	InitializePawnMoves(moves_pointer->PawnMoves[2], moves_pointer->PawnMoves[0]);
+	InitializePawnCaptures(moves_pointer->PawnCaptures[2], moves_pointer->PawnCaptures[0]);
+	InitializeKnightMoves(moves_pointer->KnightMoves);
+	InitializeBishopMoves(moves_pointer->BishopMoves);
+	InitializeRookMoves(moves_pointer->RookMoves);
 }
 
-void TerminateMoves()
+void TerminateMoves(struct Moves *moves_pointer)
 {
 	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
 	{
-/*		free(whitePawnMoves[squareNumber]);	
-		free(blackPawnMoves[squareNumber]);	
+		free(moves_pointer->PawnMoves[0][squareNumber]);	
+		free(moves_pointer->PawnMoves[2][squareNumber]);	
 
-		free(whitePawnCaptures[squareNumber]);
-		free(blackPawnCaptures[squareNumber]);
-		free(knightMoves[squareNumber]);
+		free(moves_pointer->PawnCaptures[0][squareNumber]);
+		free(moves_pointer->PawnCaptures[2][squareNumber]);
 
-		long **pointerToMovePointer = rookMoves[squareNumber];
+
+		free(moves_pointer->KnightMoves[squareNumber]);
+
+
+		long **pointerToMovePointer = moves_pointer->BishopMoves[squareNumber];
 		
 		while(*pointerToMovePointer)
 		{
@@ -627,10 +639,10 @@ void TerminateMoves()
 			*pointerToMovePointer++;
 		}
 
-		free(rookMoves[squareNumber]);
-*/		
+		free(moves_pointer->BishopMoves[squareNumber]);
 
-		long **pointerToMovePointer = bishopMoves[squareNumber];
+
+		pointerToMovePointer = moves_pointer->RookMoves[squareNumber];
 		
 		while(*pointerToMovePointer)
 		{
@@ -638,6 +650,6 @@ void TerminateMoves()
 			*pointerToMovePointer++;
 		}
 
-		free(bishopMoves[squareNumber]);
+		free(moves_pointer->RookMoves[squareNumber]);
 	}
 }

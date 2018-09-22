@@ -1,13 +1,15 @@
 #include <stdio.h>
+#include <limits.h>
 #include "bits.h"
 #include "moves.h"
-#include <limits.h>
 
 int main()
 {
 
 	char address[2];
 	long *movePointer;
+
+	struct Moves moves;
 
 	/*
 	printf("%d\n", INT_MAX);
@@ -16,8 +18,9 @@ int main()
 	*/
 
 	InitializeBits();
+	printf("Bits Initialized!\n");
 
-	InitializeMoves();
+	InitializeMoves(&moves);
 	printf("Moves Initialized!\n");
 	
 	/*
@@ -26,12 +29,18 @@ int main()
 		printf("%li\n", bit[i]);
 	}
 
+	printf("\n\n\n");
+
+
 	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
 	{
 	    SquareAddress(squareNumber, address);
 
 		printf("Square %d: %s\n", squareNumber, address);	
 	}
+
+	printf("\n\n\n");
+
 
 	for(int rank = 0; rank < 8; rank++)
 	{
@@ -46,100 +55,136 @@ int main()
 
 	}
 
+	printf("\n\n\n");
+*/
 
 	printf("White Pawn Moves\n");
 		
 	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
 	{
-			SquareAddress(squareNumber, address);
-			printf("\t%s: ", address);
+		SquareAddress(squareNumber, address);
+		printf("\t%s: ", address);
 
-			movePointer = whitePawnMoves[squareNumber];	
+		movePointer = moves.PawnMoves[2][squareNumber];	
 
-			while(*movePointer > 0)
-			{
-				SquareAddress(*movePointer, address);
-				printf("%s ", address);
+		while(*movePointer > 0)
+		{
+			SquareAddress(*movePointer, address);
+			printf("%s ", address);
 
-				movePointer++;
-			}
+			movePointer++;
+		}
 
-			printf("\n");
-
+		printf("\n");
 	}
 
-	printf("\n\n");
+	printf("\n\n\n");
+
+
 	printf("Black Pawn Moves\n");
 		
 	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
 	{
-			SquareAddress(squareNumber, address);
-			printf("\t%s: ", address);
+		SquareAddress(squareNumber, address);
+		printf("\t%s: ", address);
 
-			movePointer = blackPawnMoves[squareNumber];	
+		movePointer = moves.PawnMoves[0][squareNumber];	
 
-			while(*movePointer > 0)
-			{
-				SquareAddress(*movePointer, address);
-				printf("%s ", address);
+		while(*movePointer > 0)
+		{
+			SquareAddress(*movePointer, address);
+			printf("%s ", address);
 
-				movePointer++;
-			}
+			movePointer++;
+		}
 
-			printf("\n");
+		printf("\n");
 	}
+
+	printf("\n\n\n");
+
 
 	printf("White Pawn Captures\n");
 		
 	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
 	{
-			SquareAddress(squareNumber, address);
-			printf("\t%s: ", address);
+		SquareAddress(squareNumber, address);
+		printf("\t%s: ", address);
 
-			movePointer = whitePawnCaptures[squareNumber];	
+		movePointer = moves.PawnCaptures[2][squareNumber];	
 
-			while(*movePointer > 0)
-			{
-				SquareAddress(*movePointer, address);
-				printf("%s ", address);
+		while(*movePointer > 0)
+		{
+			SquareAddress(*movePointer, address);
+			printf("%s ", address);
 
-				movePointer++;
-			}
+			movePointer++;
+		}
 
-			printf("\n");
-
+		printf("\n");
 	}
 
-	printf("\n\n");
+	printf("\n\n\n");
+
+
 	printf("Black Pawn Captures\n");
 		
 	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
 	{
-			SquareAddress(squareNumber, address);
-			printf("\t%s: ", address);
+		SquareAddress(squareNumber, address);
+		printf("\t%s: ", address);
 
-			movePointer = blackPawnCaptures[squareNumber];	
+		movePointer = moves.PawnCaptures[0][squareNumber];	
 
-			while(*movePointer > 0)
-			{
-				SquareAddress(*movePointer, address);
-				printf("%s ", address);
+		while(*movePointer > 0)
+		{
+			SquareAddress(*movePointer, address);
+			printf("%s ", address);
 
-				movePointer++;
-			}
+			movePointer++;
+		}
 
-			printf("\n");
+		printf("\n");
 	}
 
-	printf("\n\n");
+	printf("\n\n\n");
+
+
 	printf("Knight Moves\n");
 
 	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
 	{
-			SquareAddress(squareNumber, address);
-			printf("\t%s: ", address);
+		SquareAddress(squareNumber, address);
+		printf("\t%s: ", address);
 
-			movePointer = knightMoves[squareNumber];	
+		movePointer = moves.KnightMoves[squareNumber];	
+
+		while(*movePointer > -1)
+		{
+			SquareAddress(*movePointer, address);
+			printf("%s ", address);
+
+			movePointer++;
+		}
+
+		printf("\n");
+	}
+
+	printf("\n\n\n");
+
+
+	printf("Bishop Moves\n");
+
+	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
+	{
+		long **pointerToMovePointer = moves.BishopMoves[squareNumber];
+
+		SquareAddress(squareNumber, address);
+		printf("\t%s: ", address);
+
+		while(*pointerToMovePointer)
+		{
+			movePointer = *pointerToMovePointer;
 
 			while(*movePointer > -1)
 			{
@@ -149,70 +194,43 @@ int main()
 				movePointer++;
 			}
 
-			printf("\n");
+			*pointerToMovePointer++;
+		}
+
+
+		printf("\n");
 	}
 
-	*/
+	printf("\n\n\n");
 
-	/*
-	printf("\n\n");
+
 	printf("Rook Moves\n");
 
 	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
 	{
-			long **pointerToMovePointer = rookMoves[squareNumber];
+		long **pointerToMovePointer = moves.RookMoves[squareNumber];
 
-			SquareAddress(squareNumber, address);
-			printf("\t%s: ", address);
+		SquareAddress(squareNumber, address);
+		printf("\t%s: ", address);
 
-			while(*pointerToMovePointer)
+		while(*pointerToMovePointer)
+		{
+			movePointer = *pointerToMovePointer;
+
+			while(*movePointer > -1)
 			{
-				movePointer = *pointerToMovePointer;
+				SquareAddress(*movePointer, address);
+				printf("%s ", address);
 
-				while(*movePointer > -1)
-				{
-					SquareAddress(*movePointer, address);
-					printf("%s ", address);
-
-					movePointer++;
-				}
-
-				*pointerToMovePointer++;
+				movePointer++;
 			}
 
-
-			printf("\n");
-	}
-*/
-
-	printf("\n\n");
-	printf("Bishop Moves\n");
-
-	for(int squareNumber = 0; squareNumber < 64; squareNumber++)
-	{
-			long **pointerToMovePointer = bishopMoves[squareNumber];
-
-			SquareAddress(squareNumber, address);
-			printf("\t%s: ", address);
-
-			while(*pointerToMovePointer)
-			{
-				movePointer = *pointerToMovePointer;
-
-				while(*movePointer > -1)
-				{
-					SquareAddress(*movePointer, address);
-					printf("%s ", address);
-
-					movePointer++;
-				}
-
-				*pointerToMovePointer++;
-			}
+			*pointerToMovePointer++;
+		}
 
 
-			printf("\n");
+		printf("\n");
 	}
 
-	TerminateMoves();
+	TerminateMoves(&moves);
 }
